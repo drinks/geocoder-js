@@ -9,8 +9,11 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
 
   var useSSL = false;
 
-  GeocoderJS.GoogleAPIProvider = function(_useSSL) {
-    useSSL = _useSSL;
+  GeocoderJS.GoogleAPIProvider = function(options) {
+    if (typeof options !== 'object') {
+      options = {};
+    }
+    useSSL = options.useSSL;
   };
 
   GeocoderJS.GoogleAPIProvider.prototype = new GeocoderJS.ProviderBase();
@@ -132,7 +135,13 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
 
   function executeDOMRequest(params, callback) {
     var req = new XMLHttpRequest(),
+      isXDR = false,
       requestUrl = (useSSL ? "https" : "http") + "://maps.googleapis.com/maps/api/geocode/json?sensor=false&";
+
+    if (window.XDomainRequest && !'withCredentials' in req) {
+      req = new XDomainRequest();
+      isXDR = true;
+    }
 
     for (var key in params) {
       if (params.hasOwnProperty(key)) {
@@ -141,7 +150,7 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
     }
 
     req.onload = function () {
-      if (this.status != 200) {
+      if (this.status != 200 && !isXDR) {
         console.log("Received HTTP status code " + this.status + " when attempting geocoding request.");
         return callback(null);
       }

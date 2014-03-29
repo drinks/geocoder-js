@@ -43,14 +43,20 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
 
     GeocoderJS.MapquestProvider.prototype.executeRequest = function(params, callback) {
       var req = new XMLHttpRequest(),
-      requestUrl = 'http://open.mapquestapi.com/geocoding/v1/address?outFormat=json&location=' + encodeURIComponent(params.location);
+        isXDR = false,
+        requestUrl = 'http://open.mapquestapi.com/geocoding/v1/address?outFormat=json&location=' + encodeURIComponent(params.location);
+
+      if (window.XDomainRequest && !'withCredentials' in req) {
+        req = new XDomainRequest();
+        isXDR = true;
+      }
 
       if (this.apiKey) {
         requestUrl += '&key=' + this.apiKey;
       }
 
       req.onload = function () {
-        if (this.status != 200) {
+        if (this.status != 200 && !isXDR) {
           console.log("Received HTTP status code " + this.status + " when attempting geocoding request.");
           return callback(null);
         }

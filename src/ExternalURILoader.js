@@ -115,7 +115,13 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
 
     function executeDOMRequest(params, callback) {
       var req = new XMLHttpRequest(),
+        isXDR = false,
         requestUrl = "//" + _this.options.host + "/" + _this.options.pathname + "?";
+
+      if (window.XDomainRequest && !'withCredentials' in req) {
+        req = new XDomainRequest();
+        isXDR = true;
+      }
 
       for (var key in params) {
         if (params.hasOwnProperty(key)) {
@@ -124,7 +130,7 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
       }
 
       req.onload = function () {
-        if (this.status != 200) {
+        if (this.status != 200 && !isXDR) {
           console.log("Received HTTP status code " + this.status + " when attempting geocoding request.");
           return callback(null);
         }
