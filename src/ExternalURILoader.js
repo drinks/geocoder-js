@@ -118,7 +118,7 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
         isXDR = false,
         requestUrl = "//" + _this.options.host + "/" + _this.options.pathname + "?";
 
-      if (window.XDomainRequest && !'withCredentials' in req) {
+      if (window.XDomainRequest && !('withCredentials' in req)) {
         req = new XDomainRequest();
         isXDR = true;
       }

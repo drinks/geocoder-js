@@ -138,7 +138,7 @@ if (typeof GeocoderJS === "undefined" && typeof require === "function") {
       isXDR = false,
       requestUrl = (useSSL ? "https" : "http") + "://maps.googleapis.com/maps/api/geocode/json?sensor=false&";
 
-    if (window.XDomainRequest && !'withCredentials' in req) {
+    if (window.XDomainRequest && !('withCredentials' in req)) {
       req = new XDomainRequest();
       isXDR = true;
     }
